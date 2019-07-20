@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import ControlPanel from './ControlPanel.js'
 
 const UP = 0;
 const RIGHT = 1;
@@ -62,18 +63,6 @@ function Row(props) {
 
     return(
         <div className="Row">{squares}</div>
-    );
-}
-
-function ControlPanel(props) {
-    return(
-        <div>
-            <button onClick={props.rotateOnClick}>ROTATE</button>
-            <button onClick={props.createOnClick}>CREATE</button>
-            <button onClick={props.moveLeftOnClick}>MOVE LEFT</button>
-            <button onClick={props.moveRightOnClick}>MOVE RIGHT</button>
-            <button onClick={props.moveDownOnClick}>MOVE DOWN</button>
-        </div>
     );
 }
 
@@ -174,11 +163,11 @@ class Game extends React.Component {
             <div>
                 <div className="Game_Board">{rows}</div>
                 <ControlPanel 
-                    rotateOnClick={() => this.RotateHandleClick()}
+                    SpaceOnClick={() => this.RotateHandleClick()}
                     createOnClick={() => this.CreateHandleClick()}
-                    moveDownOnClick={() => this.MoveHandleClick(DOWN)}
-                    moveLeftOnClick={() => this.MoveHandleClick(LEFT)}
-                    moveRightOnClick={() => this.MoveHandleClick(RIGHT)}
+                    DownOnClick={() => this.MoveHandleClick(DOWN)}
+                    LeftOnClick={() => this.MoveHandleClick(LEFT)}
+                    RightOnClick={() => this.MoveHandleClick(RIGHT)}
                 />
             </div>
         );
