@@ -2,14 +2,27 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import ControlPanel from './ControlPanel.js'
+import { tsMethodSignature } from '@babel/types';
+
+const COLUMN_SIZE = 8;
+const ROW_SIZE = 10;
 
 const UP = 0;
 const RIGHT = 1;
 const DOWN = 2;
 const LEFT = 3;
 
-const COLUMN_SIZE = 8;
-const ROW_SIZE = 10;
+function convertNumberToDirection(number){
+    if(number === UP)
+        return "UP";
+    else if(number === RIGHT)
+        return "RIGHT";
+    else if(number === DOWN)
+        return "DOWN";
+    else if(number === LEFT)
+        return "LEFT";
+    throw new Error();
+}
 
 function Square(props) {
     if(props.blockState) {
@@ -44,18 +57,6 @@ function Square(props) {
     }
 }
 
-function convertNumberToDirection(number){
-    if(number === UP)
-        return "UP";
-    else if(number === RIGHT)
-        return "RIGHT";
-    else if(number === DOWN)
-        return "DOWN";
-    else if(number === LEFT)
-        return "LEFT";
-    throw new Error();
-}
-
 function Row(props) {
     let squares = props.columnState.map((value, index) => {
         return(<Square blockState={value} key={index}/>);
@@ -78,10 +79,21 @@ class Game extends React.Component {
         this.state = {
             boxState: boxState,
             currentBox: [0, 0],
+            colorPool: ['hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',
+                            'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',
+                            'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',],
+            colorCount: 3,
+            blockPool: [[DOWN], 
+                                [DOWN, UP], 
+                                [LEFT, DOWN], 
+                                [LEFT, RIGHT, DOWN], 
+                                [LEFT, RIGHT, DOWN, UP]],
+            blockCount: 5,
         }
 
-        this.state.boxState[0][0] = {color: "red", pattern: [DOWN, UP]};
-        this.state.boxState[ROW_SIZE-1][COLUMN_SIZE-1] = {color: "green", pattern: [UP, LEFT]};
+        this.state.boxState[0][0] = {
+            color: this.state.colorPool[this.state.colorCount-1], 
+            pattern: [DOWN, RIGHT]};
     }
 
     rotateBlock(x, y, rotateClockwise){
@@ -117,11 +129,48 @@ class Game extends React.Component {
                 boxState: new_boxState,
                 currentBox: [new_x, new_y],
             };
+        } else if(direction === DOWN) { // when the current block collides bottom
+            const new_x_position = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
+            const new_pattern = this.getNextBlock();
+            this.setState(this.createNewBlock(0, new_x_position, new_pattern.pattern, new_pattern.color));
         } else // this is when a moving block collides to a pre-existing block
             return {};
     }
 
-    createNewBlock(x, y, pattern){
+    getNextBlock(){
+        const blockCount = this.state.blockCount;
+        const colorCount = this.state.colorCount;
+        const color = this.state.colorPool[colorCount-1];
+        const pattern = this.state.blockPool[blockCount-1];
+
+        if(blockCount === 1){
+            this.setState({
+                    blockPool: this.state.blockPool.sort(function() { return 0.5 - Math.random() }),
+                    blockCount: 5,
+            })
+        } else {
+            this.setState({
+                blockCount: blockCount-1,
+            })
+        }
+        if(colorCount === 1){
+            this.setState({
+                colorPool: this.state.colorPool.sort(function() { return 0.5 - Math.random() }),
+                colorCount: 3,
+            })
+        } else {
+            this.setState({
+                colorCount: colorCount-1,
+            })  
+        }
+
+        return {
+            pattern: pattern,
+            color: color,
+        }
+    }
+
+    createNewBlock(x, y, pattern, color){
         const cur_boxState = this.state.boxState;
         let new_boxState = copyBoxState(cur_boxState);
 
@@ -129,7 +178,7 @@ class Game extends React.Component {
 
         if(!cur_boxState[x][y]){ //check if the position is occupied by another block
             new_boxState[x][y] = {
-                color: new_color,
+                color: color,
                 pattern: pattern,
             }
             return{
@@ -138,6 +187,20 @@ class Game extends React.Component {
             }
         } else
             return {};
+    }
+
+    tick(){
+        console.log("tick");
+        let [x, y] = this.state.currentBox;
+        this.setState(this.moveCurrentBlock(x, y, DOWN));
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 1000);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
     }
 
     RotateHandleClick(){
@@ -151,7 +214,8 @@ class Game extends React.Component {
     }
 
     CreateHandleClick(){
-        this.setState(this.createNewBlock(0, 0, [DOWN, UP]));
+        let pattern = [DOWN, UP];
+        this.setState(this.createNewBlock(0, 0, pattern));
     }
 
     render() {
