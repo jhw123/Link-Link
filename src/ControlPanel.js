@@ -28,11 +28,11 @@ class ControlPanel extends React.Component{
                     onClick={this.props.SpaceOnClick}>
                     ROTATE
                 </button>
-                <button
+                {/* <button
                     className="ControlPanel_key LongKey"
                     onClick={this.props.createOnClick}>
                     CREATE
-                </button>
+                </button> */}
                 <button 
                     className="ControlPanel_key SquareKey" 
                     onClick={this.props.LeftOnClick}>
