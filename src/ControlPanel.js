@@ -3,7 +3,7 @@ import './ControlPanel.css'
 
 class ControlPanel extends React.Component{
     
-    onKeyPressed(e) {
+    onKeyDown(e) {
         if(e.key === " " || e.keyCode === 32) {
             this.props.SpaceOnClick();
         } else if(e.key === "ArrowRight" || e.keyCode === 39) {
@@ -22,7 +22,7 @@ class ControlPanel extends React.Component{
         return(
             <div
                 className="ControlPanel"
-                onKeyDown={(e) => this.onKeyPressed(e)}
+                onKeyDown={(e) => this.onKeyDown(e)}
             >
                 <button
                     className="ControlPanel_key LongKey"
