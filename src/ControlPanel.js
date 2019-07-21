@@ -21,6 +21,7 @@ class ControlPanel extends React.Component{
     render(){
         return(
             <div
+                className="ControlPanel"
                 onKeyDown={(e) => this.onKeyPressed(e)}
             >
                 <button

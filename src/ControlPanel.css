@@ -1,3 +1,7 @@
+.ControlPanel{
+    text-align: center;
+}
+
 .ControlPanel_key{
     color: #aaa;
     font: bold 9pt arial;
@@ -37,7 +41,7 @@
 }
 
 .ControlPanel_key.LongKey{
-    width: 100px;
+    width: 150px;
     height: 51px;
 }
 
