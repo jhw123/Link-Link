@@ -44,6 +44,10 @@ class InfoPanel extends React.Component{
                     <div className="Score_Number">{this.props.score}</div>
                 </div>
                 <div className="Info_Section">
+                    <div className="Stage_Title">스테이지:</div>
+                    <div className="Stage_Number">{this.props.stage}</div>
+                </div>
+                <div className="Info_Section">
                     <div className="Next_Title">다음 블록:</div>
                     <NextSquare 
                         color={this.props.color} 

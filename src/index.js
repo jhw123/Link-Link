@@ -5,8 +5,8 @@ import ControlPanel from './ControlPanel.js';
 import InstructionPanel from './InstructionPanel';
 import InfoPanel from './InfoPanel';
 
-const COLUMN_SIZE = 8;
-const ROW_SIZE = 10;
+const COLUMN_SIZE = 6;
+const ROW_SIZE = 8;
 const CHAIN_NUM = 3;
 
 const UP = 0;
@@ -94,6 +94,7 @@ class Game extends React.Component {
                                 [LEFT, RIGHT, DOWN, UP]],
             blockCount: 5,
             score: 0,
+            stage: 1,
         }
 
         this.state.boxState[0][start_x_poistion] = {
@@ -160,6 +161,7 @@ class Game extends React.Component {
         this.state.boxState[0].map((square, idx) => {
             if(!square)
                 cand_pos.push(idx);
+            return idx;
         })
         return cand_pos[Math.floor(Math.random() * cand_pos.length)];
     }
@@ -274,6 +276,7 @@ class Game extends React.Component {
                 <div className="Game_Board">{rows}</div>
                 <InfoPanel 
                     score={this.state.score}
+                    stage={this.state.stage}
                     color={this.state.colorPool[this.state.colorCount-1]}
                     pattern={this.state.blockPool[this.state.blockCount-1]}
                 />

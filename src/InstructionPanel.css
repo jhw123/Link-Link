@@ -1,19 +1,34 @@
 .Instruction{
     display: inline-block;
     vertical-align: top;
-    width: calc(50% - 208px - 28px);
-    height: calc(520px - 28px);
-    background: black;
+    width: calc(50% - 156px - 28px);
+    height: calc(416px - 28px);
     color: white;
     text-align: center;
     padding: 14px;
 }
 
-.Instruction > ol > li{
-    margin-bottom: 7px;
+.Instruction > h1{
+    margin: 0px;
+    padding: 5px;
+    margin-bottom: 14px;
+    color: yellow;
+}
+
+.Instruction > div + div{
+    margin-top: 14px;
 }
 
 .Instruction_Img{
-    margin-top: 3px;
-    height: 120px;
+    width: 120px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.Instruction_Img + div{
+    display: inline-block;
+    vertical-align: top;
+    text-align: left;
+    padding: 5px;
+    width: calc(100% - 130px);
 }

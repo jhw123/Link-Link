@@ -1,3 +1,7 @@
+body{
+    background: black;
+}
+
 .Game_Board{
     background: rgb(19, 44, 82);
     display: inline-block;
