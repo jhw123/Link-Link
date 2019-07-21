@@ -2,10 +2,30 @@ body{
     background: black;
 }
 
+.Game_Over{
+    text-align: center;
+    background: rgba(0,0,0,0.8);
+    position: absolute;
+    width: 312px;
+    height: 416px;
+    top: 0px;
+    z-index: 2;
+}
+
+.Game_Over > .Game_Over_Text{
+    color: red;
+    font-weight: bold;
+    font-size: 50px;
+    width: 100%;
+    top: 160px;
+    position: absolute;
+}
+
 .Game_Board{
     background: rgb(19, 44, 82);
     display: inline-block;
     vertical-align: top;
+    position: relative;
 }
 
 .Square_Box{

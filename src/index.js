@@ -9,6 +9,21 @@ const COLUMN_SIZE = 6;
 const ROW_SIZE = 8;
 const CHAIN_NUM = 3;
 
+const SATURATION = 100;
+const LIGHTNESS = 60;
+const COLOR_PALLETE = [`hsl(${0}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${120}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${240}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${60}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${180}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${300}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${30}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${90}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${150}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${210}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${270}, ${SATURATION}%, ${LIGHTNESS}%)`,
+                        `hsl(${330}, ${SATURATION}%, ${LIGHTNESS}%)`,];
+
 const UP = 0;
 const RIGHT = 1;
 const DOWN = 2;
@@ -69,10 +84,31 @@ function Row(props) {
     );
 }
 
+function GameOverModal(props) {
+    let style={};
+    if(props.gameState !== "Over"){
+        style={
+            display: 'none',
+        }
+    }
+    return(
+        <div className="Game_Over" style={style}>
+            <div className="Game_Over_Text">GAME OVER!</div>
+        </div>
+    );
+}
+
 class Game extends React.Component {
     constructor(props) {
         super(props);
-        const start_x_poistion = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
+
+        const colorPool = [COLOR_PALLETE[0],COLOR_PALLETE[1]];
+        const blockPool = [[DOWN],
+                            [RIGHT], 
+                            [DOWN, UP], 
+                            [RIGHT, DOWN], 
+                            [LEFT, RIGHT, DOWN],
+                            [LEFT, RIGHT, DOWN, UP]];
 
         let boxState = [];
         for(let i=0; i<ROW_SIZE; i++){
@@ -82,27 +118,23 @@ class Game extends React.Component {
         this.state = {
             boxState: boxState,
             boxStateLock: false, // this lock is used to avoid sync issues for simultaneous drop and user's DOWN
-            currentBox: [0, start_x_poistion],
-            colorPool: ['hsl(' + 0 + ', 100%, 60%)',
-                            'hsl(' + 120 + ', 100%, 60%)',
-                            'hsl(' + 240 + ', 100%, 60%)',],
-            colorCount: 3,
-            blockPool: [[DOWN], 
-                                [DOWN, UP], 
-                                [LEFT, DOWN], 
-                                [LEFT, RIGHT, DOWN], 
-                                [LEFT, RIGHT, DOWN, UP]],
-            blockCount: 5,
+            currentBox: [0, 0],
+            colorPool: colorPool.sort(function() { return 0.5 - Math.random() }),
+            colorCount: colorPool.length,
+            blockPool: blockPool.sort(function() { return 0.5 - Math.random() }),
+            blockCount: blockPool.length,
             score: 0,
             stage: 1,
+            targetScore: 50,
+            targetScoreIncrease: 50,
+            gameState: "Init",
         }
-
-        this.state.boxState[0][start_x_poistion] = {
-            color: this.state.colorPool[this.state.colorCount-1], 
-            pattern: [DOWN, RIGHT]};
     }
 
     rotateBlock(x, y, rotateClockwise){
+        if(this.state.gameState !== "Running")
+            return{};
+        
         const cur_boxState = this.state.boxState;
         let new_boxState = copyBoxState(cur_boxState);
 
@@ -118,7 +150,7 @@ class Game extends React.Component {
     } 
 
     moveCurrentBlock(x, y, direction){
-        if(this.state.boxStateLock)
+        if(this.state.boxStateLock || this.state.gameState !== "Running")
             return{};
 
         const cur_boxState = this.state.boxState;
@@ -143,14 +175,17 @@ class Game extends React.Component {
                 boxStateLock: true,
             });
             const delete_blocks = checkLinkAndReturnBlocksToDelete(x, y, this.state.boxState);
-            this.setState(this.raiseScore(Math.pow(delete_blocks.length, 2)));
-            this.setState(this.deleteBlocks(delete_blocks));
-
-            const new_x_position = this.getNextDropPosition();
-            const new_pattern = this.getNextBlock();
-            this.setState(this.createNewBlock(0, new_x_position, new_pattern.pattern, new_pattern.color));
-            this.setState({
-                boxStateLock: false,
+            this.setState(this.raiseScoreAndRaiseStage(Math.pow(delete_blocks.length, 2)));
+            this.setState(this.deleteBlocks(delete_blocks), () => {
+                const new_x_position = this.getNextDropPosition();
+                if(new_x_position === -1){
+                    this.gameOver();
+                }
+                const new_pattern = this.getNextBlock();
+                this.setState(this.createNewBlock(0, new_x_position, new_pattern.pattern, new_pattern.color));
+                this.setState({
+                    boxStateLock: false,
+                });
             });
         } else // this is when a moving block collides to a pre-existing block
             return {};
@@ -163,7 +198,11 @@ class Game extends React.Component {
                 cand_pos.push(idx);
             return idx;
         })
-        return cand_pos[Math.floor(Math.random() * cand_pos.length)];
+        if(cand_pos.length === 0){ // the condition for game over
+            return -1;
+        } else {
+            return cand_pos[Math.floor(Math.random() * cand_pos.length)];
+        }
     }
 
     getNextBlock(){
@@ -230,10 +269,85 @@ class Game extends React.Component {
         }
     }
 
-    raiseScore(score){
-        return{
-            score: this.state.score+score,
+    raiseScoreAndRaiseStage(score_to_add){
+        const score_added = this.state.score + score_to_add;
+        if(this.state.targetScore <= score_added) {
+            console.log("level up!");
+            return {
+                colorPool: [...this.state.colorPool, COLOR_PALLETE[this.state.stage+1]],
+                colorCount: this.state.colorPool.length + 1, 
+                stage: this.state.stage + 1,
+                score: score_added,
+                targetScore: this.state.targetScore + this.state.targetScoreIncrease,
+                targetScoreIncrease: this.state.targetScoreIncrease + 50,
+            }
+        } else {
+            return {
+                score: score_added,
+            }
         }
+    }
+
+    startGame(){
+        const start_x_poistion = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
+        const colorPool = [COLOR_PALLETE[0],COLOR_PALLETE[1]];
+        const blockPool = [[DOWN],
+                            [RIGHT], 
+                            [DOWN, UP], 
+                            [RIGHT, DOWN], 
+                            [LEFT, RIGHT, DOWN],
+                            [LEFT, RIGHT, DOWN, UP]];
+
+        let boxState = [];
+        for(let i=0; i<ROW_SIZE; i++){
+            boxState.push(Array(COLUMN_SIZE).fill(false));
+        }
+
+        boxState[0][start_x_poistion] = {
+            color: this.state.colorPool[this.state.colorCount-1], 
+            pattern: [DOWN, RIGHT]
+        };
+
+        this.setState({
+            boxState: boxState,
+            currentBox: [0, start_x_poistion],
+            colorPool: colorPool.sort(function() { return 0.5 - Math.random() }),
+            colorCount: colorPool.length,
+            blockPool: blockPool.sort(function() { return 0.5 - Math.random() }),
+            blockCount: blockPool.length,
+            score: 0,
+            stage: 1,
+            targetScore: 50,
+            targetScoreIncrease: 50,
+            gameState: "Running",
+        }, () => {
+            this.interval = setInterval(() => this.tick(), 1000);
+        });
+    }
+
+    pauseGame(){
+        this.setState({
+            gameState: "Pause",
+        }, () => {
+            clearInterval(this.interval);
+        })
+    }
+
+    resumeGame(){
+        this.setState({
+            gameState: "Running",
+        }, () => {
+            this.interval = setInterval(() => this.tick(), 1000);
+        })
+    }
+
+    gameOver(){
+        this.setState({
+            gameState: "Over",
+        }, () => {
+            console.log("GAME OVER!");
+            clearInterval(this.interval);
+        });
     }
 
     tick(){
@@ -242,14 +356,15 @@ class Game extends React.Component {
         this.setState(this.moveCurrentBlock(x, y, DOWN));
     }
 
-    componentDidMount() {
-        this.interval = setInterval(() => this.tick(), 1000);
-    }
+    // componentDidMount() {
+    //     this.interval = setInterval(() => this.tick(), 1000);
+    // }
 
     componentWillUnmount() {
         clearInterval(this.interval);
     }
 
+    // Handlers for click events
     RotateHandleClick(){
         let [x, y] = this.state.currentBox;
         this.setState(this.rotateBlock(x, y, true));
@@ -260,9 +375,21 @@ class Game extends React.Component {
         this.setState(this.moveCurrentBlock(x, y, direction));
     }
 
-    CreateHandleClick(){
-        let pattern = [DOWN, UP];
-        this.setState(this.createNewBlock(0, 0, pattern));
+    StartHandleClick(){
+        clearInterval(this.interval);
+        this.startGame(); 
+    }
+
+    PauseHandleClick(){
+        this.pauseGame();
+    }
+
+    ResumeHandleClick(){
+        this.resumeGame();
+    }
+
+    RetryHandleClick(){
+        this.startGame();
     }
 
     render() {
@@ -273,16 +400,25 @@ class Game extends React.Component {
         return(
             <div>
                 <InstructionPanel />
-                <div className="Game_Board">{rows}</div>
+                <div className="Game_Board">
+                    {rows}
+                    <GameOverModal 
+                        gameOver={this.state.gameState}
+                    />
+                </div>
                 <InfoPanel 
                     score={this.state.score}
                     stage={this.state.stage}
                     color={this.state.colorPool[this.state.colorCount-1]}
                     pattern={this.state.blockPool[this.state.blockCount-1]}
+                    gameState={this.state.gameState}
+                    StartOnClick={() => this.StartHandleClick()}
+                    PauseOnClick={() => this.PauseHandleClick()}
+                    ResumeOnClick={() => this.ResumeHandleClick()}
+                    RetryOnClick={() => this.RetryHandleClick()}
                 />
                 <ControlPanel 
                     SpaceOnClick={() => this.RotateHandleClick()}
-                    createOnClick={() => this.CreateHandleClick()}
                     DownOnClick={() => this.MoveHandleClick(DOWN)}
                     LeftOnClick={() => this.MoveHandleClick(LEFT)}
                     RightOnClick={() => this.MoveHandleClick(RIGHT)}
