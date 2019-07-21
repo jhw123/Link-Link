@@ -1,5 +1,15 @@
 .ControlPanel{
     text-align: center;
+    margin-top: 20px;
+}
+
+.ControlPanel > div{
+    vertical-align: top;
+    display: inline-block;
+}
+
+.ControlPanel_Text{
+    color: white;
 }
 
 .ControlPanel_key{
@@ -38,6 +48,7 @@
 .ControlPanel_key.SquareKey{
     width: 54px;
     height: 51px;
+    font-size: 25px;
 }
 
 .ControlPanel_key.LongKey{

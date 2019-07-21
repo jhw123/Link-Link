@@ -20,30 +20,39 @@ class ControlPanel extends React.Component{
 
     render(){
         return(
-            <div
-                className="ControlPanel"
-                onKeyDown={(e) => this.onKeyDown(e)}
-            >
-                <button
-                    className="ControlPanel_key LongKey"
-                    onClick={this.props.SpaceOnClick}>
-                    ROTATE
-                </button>
-                <button 
-                    className="ControlPanel_key SquareKey" 
-                    onClick={this.props.LeftOnClick}>
-                    MOVE LEFT
-                </button>
-                <button
-                    className="ControlPanel_key SquareKey"
-                    onClick={this.props.DownOnClick}>
-                    MOVE DOWN
-                </button>
-                <button 
-                    className="ControlPanel_key SquareKey"
-                    onClick={this.props.RightOnClick}>
-                    MOVE RIGHT
-                </button>
+            <div className="ControlPanel">
+                <div>
+                    <div className="ControlPanel_Text">ROTATE</div>
+                    <button
+                        className="ControlPanel_key LongKey"
+                        onClick={this.props.SpaceOnClick}>
+                        SPACEBAR
+                    </button>
+                </div>
+                <div>
+                    <div className="ControlPanel_Text">LEFT</div>
+                    <button 
+                        className="ControlPanel_key SquareKey" 
+                        onClick={this.props.LeftOnClick}>
+                        ⬅
+                    </button>
+                </div>
+                <div>
+                    <div className="ControlPanel_Text">DOWN</div>
+                    <button
+                        className="ControlPanel_key SquareKey"
+                        onClick={this.props.DownOnClick}>
+                        ⬇
+                    </button>
+                </div>
+                <div>
+                    <div className="ControlPanel_Text">RIGHT</div>
+                    <button 
+                        className="ControlPanel_key SquareKey"
+                        onClick={this.props.RightOnClick}>
+                        ➡
+                    </button>
+                </div>
             </div>
         );
     }
