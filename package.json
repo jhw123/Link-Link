@@ -10,7 +10,7 @@
     "react-keydown": "^1.9.10",
     "react-scripts": "3.0.1"
   },
-  "homepage": "https://jhw123/github.io/Link-Link",
+  "homepage": "https://jhw123.github.io/Link-Link",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
