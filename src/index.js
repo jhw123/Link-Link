@@ -129,6 +129,8 @@ class Game extends React.Component {
             targetScoreIncrease: 50,
             gameState: "Init",
         }
+
+        this.HandleKeyDown = this.HandleKeyDown.bind(this);
     }
 
     rotateBlock(x, y, rotateClockwise){
@@ -357,9 +359,9 @@ class Game extends React.Component {
         this.setState(this.moveCurrentBlock(x, y, DOWN));
     }
 
-    // componentDidMount() {
-    //     this.interval = setInterval(() => this.tick(), 1000);
-    // }
+    componentDidMount() {
+        // this.interval = setInterval(() => this.tick(), 1000);
+    }
 
     componentWillUnmount() {
         clearInterval(this.interval);
@@ -393,13 +395,30 @@ class Game extends React.Component {
         this.startGame();
     }
 
+    HandleKeyDown(e){
+        if(e.key === " " || e.keyCode === 32) {
+            this.RotateHandleClick();
+        } else if(e.key === "ArrowRight" || e.keyCode === 39) {
+            this.MoveHandleClick(RIGHT);
+        } else if(e.key === "ArrowLeft" || e.keyCode === 37) {
+            this.MoveHandleClick(LEFT);
+        } else if(e.key === "ArrowDown" || e.keyCode === 40) {
+            this.MoveHandleClick(DOWN);
+        } else
+            console.log(e.key, e.keyCode);
+        e.preventDefault();
+        return;
+    }
+
     render() {
         let rows = this.state.boxState.map((column, index) => {
             return(<Row columnState={column} key={index}/>);
         })
 
         return(
-            <div>
+            <div
+                onKeyDown={(e) => this.HandleKeyDown(e)}
+            >
                 <div className="Header">
                     <div className="Logo">
                         <div className="Text">LINK-LINK</div>
