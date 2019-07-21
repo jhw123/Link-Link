@@ -8,7 +8,7 @@ class ControlPanel extends React.Component{
             this.props.SpaceOnClick();
         } else if(e.key === "ArrowRight" || e.keyCode === 39) {
             this.props.RightOnClick();
-        } else if(e .key=== "ArrowLeft" || e.keyCode === 37) {
+        } else if(e.key === "ArrowLeft" || e.keyCode === 37) {
             this.props.LeftOnClick();
         } else if(e.key === "ArrowDown" || e.keyCode === 40) {
             this.props.DownOnClick();
@@ -29,11 +29,6 @@ class ControlPanel extends React.Component{
                     onClick={this.props.SpaceOnClick}>
                     ROTATE
                 </button>
-                {/* <button
-                    className="ControlPanel_key LongKey"
-                    onClick={this.props.createOnClick}>
-                    CREATE
-                </button> */}
                 <button 
                     className="ControlPanel_key SquareKey" 
                     onClick={this.props.LeftOnClick}>

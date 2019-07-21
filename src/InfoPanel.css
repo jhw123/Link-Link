@@ -4,7 +4,7 @@
     width: calc(50% - 156px - 28px);
     height: calc(416px - 28px);
     color: white;
-    text-align: left;
+    text-align: center;
     padding: 14px;
 }
 
@@ -14,37 +14,27 @@
 
 .Next_Title, .Stage_Title, .Score_Title{
     font-size: 32px;
-    display: inline-block;
-    vertical-align: middle;
     padding: 5px;
 }
 
-.Score_Number{
-    font-size: 32px;
-    display: inline-block;
-    vertical-align: middle;
+.Score_Number, .Stage_Number{
+    font-size: 40px;
     padding: 5px;
-    border: 4px solid white;
-    width: 120px;
-    text-align: right;
-}
-
-.Stage_Number{
-    font-size: 32px;
+    text-align: center;
+    min-width: 50px;
+    background: rgba(255,255,255,0.1);
     display: inline-block;
-    vertical-align: middle;
-    padding: 5px;
-    color: white;
+    height: 40px;
+    font-weight: bold;
 }
 
 .Next_Box{
     border: 4px solid cyan;
     width: 100px;
     height: 100px;
-    display: inline-block;
-    vertical-align: middle;
     position: relative;
     background: rgb(19, 44, 82);
+    margin: 0 auto;
 }
 
 .Next_Box-Filled{
@@ -87,4 +77,30 @@
     height: 30px;
     bottom: 35px;
     left: 0px;
+}
+
+.START_btn, .PAUSE_btn, .RESUME_btn, .RETRY_btn{
+    color: white;
+    padding: 5px;
+    font-size: 32px;
+    border: none;
+    border-radius: 3px;
+    outline: none;
+    min-width: 140px;
+}
+
+.START_btn{
+    background: hsl(0, 80%, 40%);
+}
+
+.PAUSE_btn{
+    background: hsl(120, 80%, 40%);
+}
+
+.RESUME_btn{
+    background: hsl(240, 80%, 40%);
+}
+
+.RETRY_btn{
+    background: hsl(30, 80%, 40%);
 }

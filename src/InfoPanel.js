@@ -35,16 +35,45 @@ function NextSquare(props){
     );
 }
 
+function StateButton(props){
+    if(props.gameState === "Init") {
+        return(
+            <button 
+                className="START_btn"
+                onClick={props.StartOnClick}>START</button> 
+        )
+    } else if(props.gameState === "Running") {
+        return(
+            <button 
+                className="PAUSE_btn"
+                onClick={props.PauseOnClick}>PAUSE</button>
+        )
+    } else if(props.gameState === "Pause") {
+        return(
+            <button 
+                className="RESUME_btn"
+                onClick={props.ResumeOnClick}>RESUME</button>
+        )
+    } else if(props.gameState === "Over") {
+        return(
+            <button 
+                className="RETRY_btn"
+                onClick={props.RetryOnClick}>RETRY</button>
+        )
+    } else
+        return(<div>GAME STATE UNKNOWN</div>);
+}
+
 class InfoPanel extends React.Component{
     render(){
         return(
             <div className="Info_Board">
                 <div className="Info_Section">
-                    <div className="Score_Title">스코어:</div>
+                    <div className="Score_Title">점수:</div>
                     <div className="Score_Number">{this.props.score}</div>
                 </div>
                 <div className="Info_Section">
-                    <div className="Stage_Title">스테이지:</div>
+                    <div className="Stage_Title">단계:</div>
                     <div className="Stage_Number">{this.props.stage}</div>
                 </div>
                 <div className="Info_Section">
@@ -52,6 +81,15 @@ class InfoPanel extends React.Component{
                     <NextSquare 
                         color={this.props.color} 
                         pattern={this.props.pattern}/>
+                </div>
+                <div className="Info_Section">
+                    <StateButton 
+                        gameState={this.props.gameState}
+                        StartOnClick={this.props.StartOnClick}
+                        PauseOnClick={this.props.PauseOnClick}
+                        ResumeOnClick={this.props.ResumeOnClick}
+                        RetryOnClick={this.props.RetryOnClick}
+                    />
                 </div>
             </div>
         )
