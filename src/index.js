@@ -310,6 +310,7 @@ class Game extends React.Component {
 
         this.setState({
             boxState: boxState,
+            boxStateLock: false,
             currentBox: [0, start_x_poistion],
             colorPool: colorPool.sort(function() { return 0.5 - Math.random() }),
             colorCount: colorPool.length,
@@ -399,30 +400,39 @@ class Game extends React.Component {
 
         return(
             <div>
-                <InstructionPanel />
-                <div className="Game_Board">
-                    {rows}
-                    <GameOverModal 
-                        gameOver={this.state.gameState}
+                <div className="Header">
+                    <div className="Logo">
+                        <div className="Text">LINK-LINK</div>
+                        <div className="RedSquare"></div>
+                        <div className="BlueSquare"></div>
+                    </div>
+                </div>
+                <div>
+                    <InstructionPanel />
+                    <div className="Game_Board">
+                        {rows}
+                        <GameOverModal 
+                            gameState={this.state.gameState}
+                        />
+                    </div>
+                    <InfoPanel 
+                        score={this.state.score}
+                        stage={this.state.stage}
+                        color={this.state.colorPool[this.state.colorCount-1]}
+                        pattern={this.state.blockPool[this.state.blockCount-1]}
+                        gameState={this.state.gameState}
+                        StartOnClick={() => this.StartHandleClick()}
+                        PauseOnClick={() => this.PauseHandleClick()}
+                        ResumeOnClick={() => this.ResumeHandleClick()}
+                        RetryOnClick={() => this.RetryHandleClick()}
+                    />
+                    <ControlPanel 
+                        SpaceOnClick={() => this.RotateHandleClick()}
+                        DownOnClick={() => this.MoveHandleClick(DOWN)}
+                        LeftOnClick={() => this.MoveHandleClick(LEFT)}
+                        RightOnClick={() => this.MoveHandleClick(RIGHT)}
                     />
                 </div>
-                <InfoPanel 
-                    score={this.state.score}
-                    stage={this.state.stage}
-                    color={this.state.colorPool[this.state.colorCount-1]}
-                    pattern={this.state.blockPool[this.state.blockCount-1]}
-                    gameState={this.state.gameState}
-                    StartOnClick={() => this.StartHandleClick()}
-                    PauseOnClick={() => this.PauseHandleClick()}
-                    ResumeOnClick={() => this.ResumeHandleClick()}
-                    RetryOnClick={() => this.RetryHandleClick()}
-                />
-                <ControlPanel 
-                    SpaceOnClick={() => this.RotateHandleClick()}
-                    DownOnClick={() => this.MoveHandleClick(DOWN)}
-                    LeftOnClick={() => this.MoveHandleClick(LEFT)}
-                    RightOnClick={() => this.MoveHandleClick(RIGHT)}
-                />
             </div>
         );
     }

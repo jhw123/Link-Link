@@ -2,6 +2,47 @@ body{
     background: black;
 }
 
+.Header{
+    padding: 14px;
+}
+
+.Logo{
+    font-weight: bold;
+    color: white;
+    font-size: 30px;
+    position: relative;
+    display: inline-block;
+    width: 140px;
+    height: 36px;
+}
+
+.Logo > .Text{
+    position: absolute;
+    z-index: 2;
+}
+
+.Logo > .RedSquare{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 1px solid palegoldenrod;
+    background: hsl(0, 100%, 60%);
+    z-index: 1;
+    top: 0px;
+    left: -6px;
+}
+
+.Logo > .BlueSquare{
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border: 1px solid palegoldenrod;
+    background: hsl(240, 100%, 60%);
+    z-index: 1;
+    top: 0px;
+    left: 68px;
+}
+
 .Game_Over{
     text-align: center;
     background: rgba(0,0,0,0.8);
