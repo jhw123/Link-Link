@@ -1,0 +1,19 @@
+.Instruction{
+    display: inline-block;
+    vertical-align: top;
+    width: calc(50% - 208px - 28px);
+    height: calc(520px - 28px);
+    background: black;
+    color: white;
+    text-align: center;
+    padding: 14px;
+}
+
+.Instruction > ol > li{
+    margin-bottom: 7px;
+}
+
+.Instruction_Img{
+    margin-top: 3px;
+    height: 120px;
+}

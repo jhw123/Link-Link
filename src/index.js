@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import ControlPanel from './ControlPanel.js'
-import { thisTypeAnnotation } from '@babel/types';
+import ControlPanel from './ControlPanel.js';
+import InstructionPanel from './InstructionPanel';
+import InfoPanel from './InfoPanel';
 
 const COLUMN_SIZE = 8;
 const ROW_SIZE = 10;
@@ -269,35 +270,13 @@ class Game extends React.Component {
 
         return(
             <div>
-                <div className="Instruction">
-                    <h1>게임 방법</h1>
-                    <ol>
-                        <li>
-                            <div>회전, 좌우 이동을 이용해 떨어지는 블록을 움직이기</div>
-                            <img className="Instruction_Img" src="control.png"/>
-                        </li>
-                        <li>
-                            <div>3개 이상의 같은 색 블록을 연결하여 블록 없애기</div>
-                            <img className="Instruction_Img" src="chain.png"/>
-                        </li>
-                        <li>
-                            <div>블록이 화면을 모두 채우기까지 점수 얻기!!</div>
-                        </li>
-                    </ol>
-                </div>
+                <InstructionPanel />
                 <div className="Game_Board">{rows}</div>
-                <div className="Info_Board">
-                    <div className="Info_Section">
-                        <div className="Score_Title">스코어:</div>
-                        <div className="Score_Number">{this.state.score}</div>
-                    </div>
-                    <div className="Info_Section">
-                        <div className="Next_Title">다음 블록:</div>
-                        <NextSquare 
-                            color={this.state.colorPool[this.state.colorCount-1]} 
-                            pattern={this.state.blockPool[this.state.blockCount-1]}/>
-                    </div>
-                </div>
+                <InfoPanel 
+                    score={this.state.score}
+                    color={this.state.colorPool[this.state.colorCount-1]}
+                    pattern={this.state.blockPool[this.state.blockCount-1]}
+                />
                 <ControlPanel 
                     SpaceOnClick={() => this.RotateHandleClick()}
                     createOnClick={() => this.CreateHandleClick()}
@@ -308,28 +287,6 @@ class Game extends React.Component {
             </div>
         );
     }
-}
-
-function NextSquare(props){
-    const style = {
-        background: props.color,
-    }
-
-    const link = props.pattern.map((patt) => {
-        return(
-            <div className={"Next_Box_Link "+convertNumberToDirection(patt)}
-                style={style}
-                key={patt}
-            />
-        );
-    })
-
-    return(
-        <div className="Next_Box">
-            <div className="Next_Box-Filled" style={style}></div>
-            {link}
-        </div>
-    );
 }
 
 function checkLinkAndReturnBlocksToDelete(x, y, boxState){
