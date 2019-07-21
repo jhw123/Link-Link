@@ -1,6 +1,27 @@
+.Instruction, .Info_Board{
+    display: inline-block;
+    vertical-align: top;
+    width: calc(50% - 208px - 28px);
+    height: calc(520px - 28px);
+    background: black;
+    color: white;
+    text-align: center;
+    padding: 14px;
+}
+
+.Instruction > ol > li{
+    margin-bottom: 7px;
+}
+
+.Instruction_Img{
+    margin-top: 3px;
+    height: 120px;
+}
+
 .Game_Board{
     background: rgb(19, 44, 82);
     display: inline-block;
+    vertical-align: top;
 }
 
 .Square_Box{
@@ -51,5 +72,80 @@
     width: 10px;
     height: 15px;
     bottom: 17.5px;
+    left: 0px;
+}
+
+/* INFO BOARD */
+.Info_Section + .Info_Section{
+    margin-top: 14px;
+}
+
+
+.Next_Title, .Score_Title{
+    font-size: 32px;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px;
+}
+
+.Score_Number{
+    font-size: 32px;
+    display: inline-block;
+    vertical-align: middle;
+    padding: 5px;
+    border: 4px solid white;
+    width: 120px;
+    text-align: right;
+}
+
+.Next_Box{
+    border: 4px solid cyan;
+    width: 100px;
+    height: 100px;
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    background: rgb(19, 44, 82);
+}
+
+.Next_Box-Filled{
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    top: 16px;
+    left: 16px;
+    border: 4px solid palegoldenrod;
+    z-index: 1;
+}
+
+.Next_Box_Link{
+    position: absolute;
+}
+
+.Next_Box_Link.UP{
+    width: 30px;
+    height: 20px;
+    top: 0px;
+    left: 35px;
+}
+
+.Next_Box_Link.RIGHT{
+    width: 20px;
+    height: 30px;
+    bottom: 35px;
+    right: 0px;
+}
+
+.Next_Box_Link.DOWN{
+    width: 30px;
+    height: 20px;
+    bottom: 0px;
+    left: 35px;
+}
+
+.Next_Box_Link.LEFT{
+    width: 20px;
+    height: 30px;
+    bottom: 35px;
     left: 0px;
 }

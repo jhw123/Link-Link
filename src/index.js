@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import ControlPanel from './ControlPanel.js'
+import { thisTypeAnnotation } from '@babel/types';
 
 const COLUMN_SIZE = 8;
 const ROW_SIZE = 10;
@@ -70,6 +71,7 @@ function Row(props) {
 class Game extends React.Component {
     constructor(props) {
         super(props);
+        const start_x_poistion = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
 
         let boxState = [];
         for(let i=0; i<ROW_SIZE; i++){
@@ -78,7 +80,8 @@ class Game extends React.Component {
 
         this.state = {
             boxState: boxState,
-            currentBox: [0, 0],
+            boxStateLock: false, // this lock is used to avoid sync issues for simultaneous drop and user's DOWN
+            currentBox: [0, start_x_poistion],
             colorPool: ['hsl(' + 0 + ', 100%, 60%)',
                             'hsl(' + 120 + ', 100%, 60%)',
                             'hsl(' + 240 + ', 100%, 60%)',],
@@ -89,9 +92,10 @@ class Game extends React.Component {
                                 [LEFT, RIGHT, DOWN], 
                                 [LEFT, RIGHT, DOWN, UP]],
             blockCount: 5,
+            score: 0,
         }
 
-        this.state.boxState[0][0] = {
+        this.state.boxState[0][start_x_poistion] = {
             color: this.state.colorPool[this.state.colorCount-1], 
             pattern: [DOWN, RIGHT]};
     }
@@ -112,6 +116,9 @@ class Game extends React.Component {
     } 
 
     moveCurrentBlock(x, y, direction){
+        if(this.state.boxStateLock)
+            return{};
+
         const cur_boxState = this.state.boxState;
         let new_boxState = copyBoxState(cur_boxState);
 
@@ -130,14 +137,30 @@ class Game extends React.Component {
                 currentBox: [new_x, new_y],
             };
         } else if(direction === DOWN) { // when the current block collides bottom
-            this.setState(this.deleteBlocks(
-                checkLinkAndReturnBlocksToDelete(x, y, this.state.boxState)));
+            this.setState({
+                boxStateLock: true,
+            });
+            const delete_blocks = checkLinkAndReturnBlocksToDelete(x, y, this.state.boxState);
+            this.setState(this.raiseScore(Math.pow(delete_blocks.length, 2)));
+            this.setState(this.deleteBlocks(delete_blocks));
 
-            const new_x_position = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
+            const new_x_position = this.getNextDropPosition();
             const new_pattern = this.getNextBlock();
             this.setState(this.createNewBlock(0, new_x_position, new_pattern.pattern, new_pattern.color));
+            this.setState({
+                boxStateLock: false,
+            });
         } else // this is when a moving block collides to a pre-existing block
             return {};
+    }
+
+    getNextDropPosition(){
+        let cand_pos = []
+        this.state.boxState[0].map((square, idx) => {
+            if(!square)
+                cand_pos.push(idx);
+        })
+        return cand_pos[Math.floor(Math.random() * cand_pos.length)];
     }
 
     getNextBlock(){
@@ -149,7 +172,7 @@ class Game extends React.Component {
         if(blockCount === 1){
             this.setState({
                     blockPool: this.state.blockPool.sort(function() { return 0.5 - Math.random() }),
-                    blockCount: 5,
+                    blockCount: this.state.blockPool.length,
             })
         } else {
             this.setState({
@@ -159,7 +182,7 @@ class Game extends React.Component {
         if(colorCount === 1){
             this.setState({
                 colorPool: this.state.colorPool.sort(function() { return 0.5 - Math.random() }),
-                colorCount: 3,
+                colorCount: this.state.colorPool.length,
             })
         } else {
             this.setState({
@@ -198,8 +221,15 @@ class Game extends React.Component {
             const [x, y] = block;
             new_boxState[x][y] = false;
         }
+        
         return{
             boxState: new_boxState,
+        }
+    }
+
+    raiseScore(score){
+        return{
+            score: this.state.score+score,
         }
     }
 
@@ -239,7 +269,35 @@ class Game extends React.Component {
 
         return(
             <div>
+                <div className="Instruction">
+                    <h1>게임 방법</h1>
+                    <ol>
+                        <li>
+                            <div>회전, 좌우 이동을 이용해 떨어지는 블록을 움직이기</div>
+                            <img className="Instruction_Img" src="control.png"/>
+                        </li>
+                        <li>
+                            <div>3개 이상의 같은 색 블록을 연결하여 블록 없애기</div>
+                            <img className="Instruction_Img" src="chain.png"/>
+                        </li>
+                        <li>
+                            <div>블록이 화면을 모두 채우기까지 점수 얻기!!</div>
+                        </li>
+                    </ol>
+                </div>
                 <div className="Game_Board">{rows}</div>
+                <div className="Info_Board">
+                    <div className="Info_Section">
+                        <div className="Score_Title">스코어:</div>
+                        <div className="Score_Number">{this.state.score}</div>
+                    </div>
+                    <div className="Info_Section">
+                        <div className="Next_Title">다음 블록:</div>
+                        <NextSquare 
+                            color={this.state.colorPool[this.state.colorCount-1]} 
+                            pattern={this.state.blockPool[this.state.blockCount-1]}/>
+                    </div>
+                </div>
                 <ControlPanel 
                     SpaceOnClick={() => this.RotateHandleClick()}
                     createOnClick={() => this.CreateHandleClick()}
@@ -250,6 +308,28 @@ class Game extends React.Component {
             </div>
         );
     }
+}
+
+function NextSquare(props){
+    const style = {
+        background: props.color,
+    }
+
+    const link = props.pattern.map((patt) => {
+        return(
+            <div className={"Next_Box_Link "+convertNumberToDirection(patt)}
+                style={style}
+                key={patt}
+            />
+        );
+    })
+
+    return(
+        <div className="Next_Box">
+            <div className="Next_Box-Filled" style={style}></div>
+            {link}
+        </div>
+    );
 }
 
 function checkLinkAndReturnBlocksToDelete(x, y, boxState){
@@ -294,12 +374,13 @@ function checkLinkAndReturnBlocksToDelete(x, y, boxState){
             }
             cnt++;
         }
-        console.log(cnt, block_to_delete);
 
-        if(block_to_delete.length >= CHAIN_NUM)
+        if(block_to_delete.length >= CHAIN_NUM){
+            console.log("chained!", cnt, block_to_delete);
             return block_to_delete;
-        else
+        } else {
             return [];
+        }
     } else {
         throw new Error("Wrong X and Y to check link.");
     }
