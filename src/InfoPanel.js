@@ -40,25 +40,25 @@ function StateButton(props){
         return(
             <button 
                 className="START_btn"
-                onClick={props.StartOnClick}>START</button> 
+                onClick={props.StartOnClick}>시작</button> 
         )
     } else if(props.gameState === "Running") {
         return(
             <button 
                 className="PAUSE_btn"
-                onClick={props.PauseOnClick}>PAUSE</button>
+                onClick={props.PauseOnClick}>일시정지</button>
         )
     } else if(props.gameState === "Pause") {
         return(
             <button 
                 className="RESUME_btn"
-                onClick={props.ResumeOnClick}>RESUME</button>
+                onClick={props.ResumeOnClick}>계속하기</button>
         )
     } else if(props.gameState === "Over") {
         return(
             <button 
                 className="RETRY_btn"
-                onClick={props.RetryOnClick}>RETRY</button>
+                onClick={props.RetryOnClick}>재시작</button>
         )
     } else
         return(<div>GAME STATE UNKNOWN</div>);
