@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import ControlPanel from './ControlPanel.js'
-import { tsMethodSignature } from '@babel/types';
 
 const COLUMN_SIZE = 8;
 const ROW_SIZE = 10;
+const CHAIN_NUM = 3;
 
 const UP = 0;
 const RIGHT = 1;
@@ -79,9 +79,9 @@ class Game extends React.Component {
         this.state = {
             boxState: boxState,
             currentBox: [0, 0],
-            colorPool: ['hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',
-                            'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',
-                            'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)',],
+            colorPool: ['hsl(' + 0 + ', 100%, 60%)',
+                            'hsl(' + 120 + ', 100%, 60%)',
+                            'hsl(' + 240 + ', 100%, 60%)',],
             colorCount: 3,
             blockPool: [[DOWN], 
                                 [DOWN, UP], 
@@ -130,6 +130,9 @@ class Game extends React.Component {
                 currentBox: [new_x, new_y],
             };
         } else if(direction === DOWN) { // when the current block collides bottom
+            this.setState(this.deleteBlocks(
+                checkLinkAndReturnBlocksToDelete(x, y, this.state.boxState)));
+
             const new_x_position = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
             const new_pattern = this.getNextBlock();
             this.setState(this.createNewBlock(0, new_x_position, new_pattern.pattern, new_pattern.color));
@@ -174,8 +177,6 @@ class Game extends React.Component {
         const cur_boxState = this.state.boxState;
         let new_boxState = copyBoxState(cur_boxState);
 
-        const new_color = 'hsl(' + Math.floor(Math.random() * 360) + ', 100%, 60%)';
-
         if(!cur_boxState[x][y]){ //check if the position is occupied by another block
             new_boxState[x][y] = {
                 color: color,
@@ -187,6 +188,19 @@ class Game extends React.Component {
             }
         } else
             return {};
+    }
+
+    deleteBlocks(listOfBlocks){
+        const cur_boxState = this.state.boxState;
+        let new_boxState = copyBoxState(cur_boxState);
+
+        for(let block of listOfBlocks){
+            const [x, y] = block;
+            new_boxState[x][y] = false;
+        }
+        return{
+            boxState: new_boxState,
+        }
     }
 
     tick(){
@@ -236,6 +250,79 @@ class Game extends React.Component {
             </div>
         );
     }
+}
+
+function checkLinkAndReturnBlocksToDelete(x, y, boxState){
+    if(boxState[x][y]){
+        let block_to_delete = [];
+        let queue = [[x, y]]; // use a queue for Breadth First Search
+
+        let cnt = 0;
+
+        while(queue.length > 0 && cnt < 20){
+            const [cur_x, cur_y] = queue.shift();
+            const popped_block = boxState[cur_x][cur_y];
+            block_to_delete.push([cur_x, cur_y]);
+
+            if(cur_x > 0){
+                const up_square = boxState[cur_x-1][cur_y];
+                if(checkLinked(popped_block, up_square, UP)){
+                    if(!checkArrayIn2DArray(block_to_delete, [cur_x-1, cur_y]))
+                        queue.push([cur_x-1, cur_y]);
+                }
+            }
+            if(cur_x < ROW_SIZE-1){
+                const down_square = boxState[cur_x+1][cur_y];
+                if(checkLinked(popped_block, down_square, DOWN)){
+                    if(!checkArrayIn2DArray(block_to_delete, [cur_x+1, cur_y]))
+                        queue.push([cur_x+1, cur_y]);
+                }
+            }
+            if(cur_y > 0){
+                const left_square = boxState[cur_x][cur_y-1];
+                if(checkLinked(popped_block, left_square, LEFT)){
+                    if(!checkArrayIn2DArray(block_to_delete, [cur_x, cur_y-1]))
+                        queue.push([cur_x, cur_y-1]);
+                }
+            }
+            if(cur_y < COLUMN_SIZE-1){
+                const right_square = boxState[cur_x][cur_y+1];
+                if(checkLinked(popped_block, right_square, RIGHT)){
+                    if(!checkArrayIn2DArray(block_to_delete, [cur_x, cur_y+1]))
+                        queue.push([cur_x, cur_y+1]);
+                }
+            }
+            cnt++;
+        }
+        console.log(cnt, block_to_delete);
+
+        if(block_to_delete.length >= CHAIN_NUM)
+            return block_to_delete;
+        else
+            return [];
+    } else {
+        throw new Error("Wrong X and Y to check link.");
+    }
+}
+
+function checkLinked(check_block, adjacent_block, direction){
+    const opposite_direction = (direction+2)%4;
+
+    if(check_block.pattern.includes(direction) 
+        && adjacent_block
+        && adjacent_block.pattern.includes(opposite_direction)
+        && check_block.color === adjacent_block.color){
+            return true;
+    }
+    return false;
+}
+
+function checkArrayIn2DArray(target_array, check_array){
+    for(let cur_array of target_array){
+        if(cur_array[0] === check_array[0] && cur_array[1] === check_array[1])
+            return true;
+    }
+    return false;
 }
 
 function copyBoxState(boxState){
