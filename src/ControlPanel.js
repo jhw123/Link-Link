@@ -22,7 +22,7 @@ class ControlPanel extends React.Component{
         return(
             <div className="ControlPanel">
                 <div>
-                    <div className="ControlPanel_Text">ROTATE</div>
+                    <div className="ControlPanel_Text">블록 회전</div>
                     <button
                         className="ControlPanel_key LongKey"
                         onClick={this.props.SpaceOnClick}>
@@ -30,7 +30,7 @@ class ControlPanel extends React.Component{
                     </button>
                 </div>
                 <div>
-                    <div className="ControlPanel_Text">LEFT</div>
+                    <div className="ControlPanel_Text">좌로 이동</div>
                     <button 
                         className="ControlPanel_key SquareKey" 
                         onClick={this.props.LeftOnClick}>
@@ -38,7 +38,7 @@ class ControlPanel extends React.Component{
                     </button>
                 </div>
                 <div>
-                    <div className="ControlPanel_Text">DOWN</div>
+                    <div className="ControlPanel_Text">내리기</div>
                     <button
                         className="ControlPanel_key SquareKey"
                         onClick={this.props.DownOnClick}>
@@ -46,7 +46,7 @@ class ControlPanel extends React.Component{
                     </button>
                 </div>
                 <div>
-                    <div className="ControlPanel_Text">RIGHT</div>
+                    <div className="ControlPanel_Text">우로 이동</div>
                     <button 
                         className="ControlPanel_key SquareKey"
                         onClick={this.props.RightOnClick}>
