@@ -18,7 +18,7 @@ class InstuctionPanel extends React.Component{
                         src="chain.png"
                         alt="Link three equal-colored blocks to remove blocks."
                     />
-                    <div num="2.">3개 이상의 같은 색 블록을 연결하여 블록 없애세요. 한번에 더 많은 블록을 없앨수록 높은 점수를 얻습니다.</div>
+                    <div num="2.">3개 이상의 같은 색 블록을 연결하여 블록을 없애세요. 한번에 더 많은 블록을 없앨수록 높은 점수를 얻습니다.</div>
                 </div>
                 <div>
                     <img className="Instruction_Img" 
