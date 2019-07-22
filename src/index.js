@@ -273,6 +273,12 @@ class Game extends React.Component {
 
     raiseScoreAndRaiseStage(score_to_add){
         const score_added = this.state.score + score_to_add;
+        
+        if(!localStorage.getItem("Link-Link-Highest-Score") // update highest score at localstorage
+            || localStorage.getItem("Link-Link-Highest-Score") < score_added) {
+            localStorage.setItem("Link-Link-Highest-Score", score_added);
+        }
+
         if(this.state.targetScore <= score_added) {
             console.log("level up!");
             return {
