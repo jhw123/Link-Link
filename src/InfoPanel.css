@@ -8,8 +8,35 @@
     padding: 14px;
 }
 
+.Info_Section:last-child{
+    margin-top: 14px !important;
+}
+
 .Info_Section + .Info_Section{
     margin-top: 14px;
+}
+
+@media screen and (max-width: 992px){
+    .Info_Board{
+        width: calc(100% - 312px - 28px - 150px);
+        height: initial;
+    }
+}
+
+@media screen and (max-width: 768px){
+    .Info_Board{
+        width: calc(100% - 28px);
+        height: initial;
+    }
+
+    .Info_Section{
+        display: inline-block;
+        vertical-align: top;
+    }
+
+    .Info_Section + .Info_Section{
+        margin-top: 0px;
+    }
 }
 
 .Next_Title, .Stage_Title, .Score_Title{
