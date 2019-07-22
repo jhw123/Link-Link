@@ -10,8 +10,23 @@
 
 @media screen and (max-width: 992px){
     .Instruction{
-        width: calc(100% - 28px);
+        width: calc(70% - 28px);
         height: initial;
+        margin-left: 15%;
+        margin-right: 15%;
+        margin-bottom: 50px;
+        background: rgba(255,255,255,0.1)
+    }
+}
+
+@media screen and (max-width: 768px){
+    .Instruction{
+        width: calc(312px - 28px);
+        height: initial;
+        margin-left: calc(50% - 156px);
+        margin-right: calc(50% - 156px);
+        margin-bottom: 50px;
+        background: rgba(255,255,255,0.1)
     }
 }
 
