@@ -52,5 +52,14 @@
     vertical-align: top;
     text-align: left;
     padding: 5px;
-    width: calc(100% - 130px);
+    width: calc(100% - 130px - 30px);
+    padding-left: 30px;
+    position: relative;
+}
+
+.Instruction_Img + div:before{
+    content: attr(num);
+    position: absolute;
+    top: 5px;
+    left: 14px;
 }
