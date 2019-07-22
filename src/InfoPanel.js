@@ -18,21 +18,30 @@ function NextSquare(props){
         background: props.color,
     }
 
-    const link = props.pattern.map((patt) => {
+    // check if there is no next block. This happens when the page initializes
+    if(!props.pattern || !props.color) {
+        console.log("No next block");
         return(
-            <div className={"Next_Box_Link "+convertNum2Dir(patt)}
-                style={style}
-                key={patt}
-            />
+            <div className="Next_Box" />
         );
-    })
+    } else {
+        // Create link elements
+        const link = props.pattern.map((patt) => {
+            return(
+                <div className={"Next_Box_Link "+convertNum2Dir(patt)}
+                    style={style}
+                    key={patt}
+                />
+            );
+        })
 
-    return(
-        <div className="Next_Box">
-            <div className="Next_Box-Filled" style={style}></div>
-            {link}
-        </div>
-    );
+        return(
+            <div className="Next_Box">
+                <div className="Next_Box-Filled" style={style}></div>
+                {link}
+            </div>
+        );
+    }
 }
 
 function StateButton(props){
