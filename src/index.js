@@ -24,6 +24,9 @@ const COLOR_PALLETE = [`hsl(${0}, ${SATURATION}%, ${LIGHTNESS}%)`,
                         `hsl(${270}, ${SATURATION}%, ${LIGHTNESS}%)`,
                         `hsl(${330}, ${SATURATION}%, ${LIGHTNESS}%)`,];
 
+const RAINBOW_COLOR = "linear-gradient(to right top, #FF3333,#33FF33,#3333FF,#FFFF33,#33FFFF,#FF33FF, #FF9933)";
+const QUEUE_REFRESH_LENGTH = 3;
+
 const UP = 0;
 const RIGHT = 1;
 const DOWN = 2;
@@ -102,14 +105,6 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
 
-        const colorPool = [COLOR_PALLETE[0],COLOR_PALLETE[1]];
-        const blockPool = [[DOWN],
-                            [RIGHT], 
-                            [DOWN, UP], 
-                            [RIGHT, DOWN], 
-                            [LEFT, RIGHT, DOWN],
-                            [LEFT, RIGHT, DOWN, UP]];
-
         let boxState = [];
         for(let i=0; i<ROW_SIZE; i++){
             boxState.push(Array(COLUMN_SIZE).fill(false));
@@ -119,10 +114,15 @@ class Game extends React.Component {
             boxState: boxState,
             boxStateLock: false, // this lock is used to avoid sync issues for simultaneous drop and user's DOWN
             currentBox: [0, 0],
-            colorPool: colorPool.sort(function() { return 0.5 - Math.random() }),
-            colorCount: colorPool.length,
-            blockPool: blockPool.sort(function() { return 0.5 - Math.random() }),
-            blockCount: blockPool.length,
+            colorPool: [COLOR_PALLETE[0],COLOR_PALLETE[1]],
+            colorQueue: [],
+            blockPool: [[DOWN],
+                        [RIGHT], 
+                        [DOWN, UP], 
+                        [RIGHT, DOWN], 
+                        [LEFT, RIGHT, DOWN],
+                        [LEFT, RIGHT, DOWN, UP]],
+            blockQueue: [],
             score: 0,
             stage: 1,
             targetScore: 50,
@@ -208,36 +208,44 @@ class Game extends React.Component {
     }
 
     getNextBlock(){
-        const blockCount = this.state.blockCount;
-        const colorCount = this.state.colorCount;
-        const color = this.state.colorPool[colorCount-1];
-        const pattern = this.state.blockPool[blockCount-1];
+        const color = this.state.colorQueue[0];
+        const pattern = this.state.blockQueue[0];
 
-        if(blockCount === 1){
-            this.setState({
-                    blockPool: this.state.blockPool.sort(function() { return 0.5 - Math.random() }),
-                    blockCount: this.state.blockPool.length,
-            })
-        } else {
-            this.setState({
-                blockCount: blockCount-1,
-            })
+        // pop the first elements in the queues
+        let new_queue_state = {
+            blockQueue: this.state.blockQueue.slice(1),
+            colorQueue: this.state.colorQueue.slice(1),
         }
-        if(colorCount === 1){
-            this.setState({
-                colorPool: this.state.colorPool.sort(function() { return 0.5 - Math.random() }),
-                colorCount: this.state.colorPool.length,
-            })
-        } else {
-            this.setState({
-                colorCount: colorCount-1,
-            })  
+
+        if(this.state.blockQueue.length < QUEUE_REFRESH_LENGTH){
+            new_queue_state.blockQueue = [...new_queue_state.blockQueue, 
+                                            ...this.getNewBlockPattern(this.state.blockPool)];
         }
+        if(this.state.colorQueue.length < QUEUE_REFRESH_LENGTH){
+            new_queue_state.colorQueue = [...new_queue_state.colorQueue, 
+                                            ...this.getNewColorPattern(this.state.colorPool)];
+        }
+        this.setState(new_queue_state);
 
         return {
             pattern: pattern,
             color: color,
         }
+    }
+
+    getNewColorPattern(color_pool){
+        let newPattern = color_pool.slice();
+        newPattern.sort(function() { return 0.5 - Math.random() });
+        if(Math.random() > 0.9){ // add rainbow block in 10% chance
+            newPattern.push(RAINBOW_COLOR);
+        }
+        return newPattern;
+    }
+
+    getNewBlockPattern(block_pool){
+        let newPattern = block_pool.slice();
+        newPattern.sort(function() { return 0.5 - Math.random() });
+        return newPattern;
     }
 
     createNewBlock(x, y, pattern, color){
@@ -283,7 +291,6 @@ class Game extends React.Component {
             console.log("level up!");
             return {
                 colorPool: [...this.state.colorPool, COLOR_PALLETE[this.state.stage+1]],
-                colorCount: this.state.colorPool.length + 1, 
                 stage: this.state.stage + 1,
                 score: score_added,
                 targetScore: this.state.targetScore + this.state.targetScoreIncrease,
@@ -298,13 +305,6 @@ class Game extends React.Component {
 
     startGame(){
         const start_x_poistion = Math.floor((Math.random() * COLUMN_SIZE-1) + 1);
-        const colorPool = [COLOR_PALLETE[0],COLOR_PALLETE[1]];
-        const blockPool = [[DOWN],
-                            [RIGHT], 
-                            [DOWN, UP], 
-                            [RIGHT, DOWN], 
-                            [LEFT, RIGHT, DOWN],
-                            [LEFT, RIGHT, DOWN, UP]];
 
         let boxState = [];
         for(let i=0; i<ROW_SIZE; i++){
@@ -312,18 +312,23 @@ class Game extends React.Component {
         }
 
         boxState[0][start_x_poistion] = {
-            color: this.state.colorPool[this.state.colorCount-1], 
-            pattern: [DOWN, RIGHT]
+            color: this.state.colorPool[0], 
+            pattern: [DOWN, RIGHT],
         };
 
         this.setState({
             boxState: boxState,
             boxStateLock: false,
             currentBox: [0, start_x_poistion],
-            colorPool: colorPool.sort(function() { return 0.5 - Math.random() }),
-            colorCount: colorPool.length,
-            blockPool: blockPool.sort(function() { return 0.5 - Math.random() }),
-            blockCount: blockPool.length,
+            colorPool: [COLOR_PALLETE[0],COLOR_PALLETE[1]],
+            colorQueue: [COLOR_PALLETE[0]],
+            blockPool: [[DOWN],
+                        [RIGHT], 
+                        [DOWN, UP], 
+                        [RIGHT, DOWN], 
+                        [LEFT, RIGHT, DOWN],
+                        [LEFT, RIGHT, DOWN, UP]],
+            blockQueue: [[DOWN, UP, RIGHT]],
             score: 0,
             stage: 1,
             targetScore: 50,
@@ -443,8 +448,8 @@ class Game extends React.Component {
                     <InfoPanel 
                         score={this.state.score}
                         stage={this.state.stage}
-                        color={this.state.colorPool[this.state.colorCount-1]}
-                        pattern={this.state.blockPool[this.state.blockCount-1]}
+                        color={this.state.colorQueue[0]}
+                        pattern={this.state.blockQueue[0]}
                         gameState={this.state.gameState}
                         StartOnClick={() => this.StartHandleClick()}
                         PauseOnClick={() => this.PauseHandleClick()}
@@ -523,7 +528,9 @@ function checkLinked(check_block, adjacent_block, direction){
     if(check_block.pattern.includes(direction) 
         && adjacent_block
         && adjacent_block.pattern.includes(opposite_direction)
-        && check_block.color === adjacent_block.color){
+        && (check_block.color === adjacent_block.color 
+            || check_block.color === RAINBOW_COLOR
+            || adjacent_block.color === RAINBOW_COLOR)){
             return true;
     }
     return false;
