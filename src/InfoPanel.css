@@ -44,15 +44,16 @@
     padding: 5px;
 }
 
-.Score_Number, .Stage_Number{
+.Number_Box{
     font-size: 40px;
     padding: 5px;
     text-align: center;
     min-width: 50px;
+    height: 50px;
     background: rgba(255,255,255,0.1);
     display: inline-block;
-    height: 40px;
     font-weight: bold;
+    position: relative;
 }
 
 .Next_Box{

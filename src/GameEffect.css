@@ -1,0 +1,23 @@
+.BorderHighlight{
+    position: absolute;
+    top: -2px;
+    left: -2px;
+}
+
+.BorderHighlight-Off{
+    display: none;
+}
+
+polygon {
+    stroke: gold;
+    stroke-width: 7px;
+    stroke-dasharray: 20, 30;
+    stroke-dashoffset: 0;
+    fill: none;
+    animation: border 5s linear infinite;
+}
+@keyframes border {
+    to {
+      stroke-dashoffset: -800;
+    }
+}
