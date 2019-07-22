@@ -123,6 +123,7 @@ class Game extends React.Component {
                         [LEFT, RIGHT, DOWN],
                         [LEFT, RIGHT, DOWN, UP]],
             blockQueue: [],
+            specialBlockPossibility: 0.9,
             score: 0,
             stage: 1,
             targetScore: 50,
@@ -236,8 +237,15 @@ class Game extends React.Component {
     getNewColorPattern(color_pool){
         let newPattern = color_pool.slice();
         newPattern.sort(function() { return 0.5 - Math.random() });
-        if(Math.random() > 0.9){ // add rainbow block in 10% chance
+        if(Math.random() > this.state.specialBlockPossibility){ // add rainbow block in 10% chance
             newPattern.push(RAINBOW_COLOR);
+            this.setState({
+                specialBlockPossibility: 0.9,
+            });
+        } else {
+            this.setState({
+                specialBlockPossibility: this.state.specialBlockPossibility-0.05,
+            });
         }
         return newPattern;
     }
