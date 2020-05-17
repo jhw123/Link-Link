@@ -1,6 +1,4 @@
-node_modules
-.gitignore
+node_modules/
 REACT_README.md
 todo.txt
-package-lock.json
-build
+build/
